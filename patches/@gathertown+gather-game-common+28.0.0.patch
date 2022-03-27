@@ -1,0 +1,10 @@
+diff --git a/node_modules/@gathertown/gather-game-common/dist/src/generated_DO_NOT_TOUCH/events.d.ts b/node_modules/@gathertown/gather-game-common/dist/src/generated_DO_NOT_TOUCH/events.d.ts
+index e24e9ad..ecbcb38 100644
+--- a/node_modules/@gathertown/gather-game-common/dist/src/generated_DO_NOT_TOUCH/events.d.ts
++++ b/node_modules/@gathertown/gather-game-common/dist/src/generated_DO_NOT_TOUCH/events.d.ts
+@@ -1,4 +1,4 @@
+-import _m0 from "protobufjs/minimal";
++import * as _m0 from "protobufjs/minimal";
+ export declare const protobufPackage = "";
+ export interface SpriteDirectionEnum {
+ }

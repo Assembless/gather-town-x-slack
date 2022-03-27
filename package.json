@@ -7,11 +7,14 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "start": "node ./dist/index.js",
-    "dev": "yarn build && yarn start"
+    "execute": "node ./dist/index.js",
+    "start": "yarn build && yarn execute",
+    "postinstall": "patch-package"
   },
   "dependencies": {
-    "@gathertown/gather-game-client": "^36.0.3"
+    "@gathertown/gather-game-client": "^36.0.3",
+    "patch-package": "^6.4.7",
+    "postinstall-postinstall": "^2.1.0"
   },
   "devDependencies": {
     "typescript": "^4.6.3"
