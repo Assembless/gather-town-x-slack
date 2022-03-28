@@ -5,14 +5,17 @@
   "author": "Mike Eling <mike.eling97@gmail.com>",
   "license": "MIT",
   "private": true,
+  "types": "./src/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "execute": "node ./dist/index.js",
-    "start": "yarn build && yarn execute",
+    "start": "nodemon ./dist/index.js",
+    "dev": "nodemon ./src/index.ts",
     "postinstall": "patch-package"
   },
   "dependencies": {
     "@gathertown/gather-game-client": "^36.0.3",
+    "@slack/bolt": "^3.10.0",
+    "dotenv": "^16.0.0",
     "gathertown.js": "^1.0.0-alpha.1",
     "patch-package": "^6.4.7",
     "postinstall-postinstall": "^2.1.0",
@@ -20,6 +23,8 @@
   },
   "devDependencies": {
     "@types/ws": "^8.5.3",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.7.0",
     "typescript": "^4.6.3"
   }
 }
