@@ -43,7 +43,7 @@ export const generatePresenceMessage = (players: GatherPlayer[]) => {
                                 .filter(filterMembers(members, true));
 
         const membersOffline = members
-                                .filter(filterOfflineMembers(membersOnline));
+                                .filter(filterOfflineMembers(players));
 
         writeLine(`🧑‍🚀  *Members (${membersOnline.length} online)*`);
 
