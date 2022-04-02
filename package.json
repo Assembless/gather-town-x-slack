@@ -1,5 +1,5 @@
 {
-  "name": "gather-town-space-api",
+  "name": "gather-town-x-slack",
   "version": "1.0.0",
   "main": "index.js",
   "author": "Mike Eling <mike.eling97@gmail.com>",
@@ -8,8 +8,9 @@
   "types": "./src/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "start": "nodemon ./dist/index.js",
-    "dev": "nodemon ./src/index.ts",
+    "start": "node ./dist/index.js",
+    "dev": "yarn build && yarn start",
+    "watch": "nodemon ./src/index.ts",
     "postinstall": "patch-package"
   },
   "dependencies": {
