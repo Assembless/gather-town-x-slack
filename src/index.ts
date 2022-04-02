@@ -99,7 +99,8 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
 
     if (!exists) {
       // Get the full player object from gather.
-      const gatherPlayer = gatherClient.getPlayer(context.playerId!);
+      // ! The "getPlayer" method's ReturnType should be a Promise!
+      const gatherPlayer = await gatherClient.getPlayer(context.playerId!);
       // Find the player's slack id. Only available for members.
       const member = config.members.find(
         (member) => member.gatherId === context.playerId
@@ -210,7 +211,7 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
   setInterval(() => {
     // Refetch all Gather players data.
     playersOnline.forEach(async (player) => {
-      const gatherPlayer = gatherClient.getPlayer(player.gatherId);
+      const gatherPlayer = await gatherClient.getPlayer(player.gatherId);
 
       playersOnline[playersOnline.indexOf(player)] = { ...player, ...gatherPlayer };
     });
