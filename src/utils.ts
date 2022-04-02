@@ -43,7 +43,7 @@ export const generatePresenceMessage = (players: GatherPlayer[]) => {
                                 .filter(filterMembers(members, true));
 
         const membersOffline = members
-                                .filter(filterOfflineMembers(players));
+                                .filter(filterOfflineMembers(membersOnline));
 
         writeLine(`🧑‍🚀  *Members (${membersOnline.length} online)*`);
 
@@ -99,5 +99,5 @@ export const generateBulletList = (items: string[]) => {
  */
 const filterOfflineMembers =    (membersOnline: GatherPlayer[]) => 
                                     (member: Member) => 
-                                        !!membersOnline.find(memberOnline => memberOnline.gatherId !== member.gatherId);
+                                        !membersOnline.find(memberOnline => memberOnline.gatherId === member.gatherId);
 
