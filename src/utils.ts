@@ -27,11 +27,15 @@ const createPlayerLabel = (player: GatherPlayer, isOffline: boolean = false) => 
 export const generatePresenceMessage = (players: GatherPlayer[]) => {
     const members = config.members;
 
-    let message = [];
-    message.push(`:office: Metaverse Office`);
-    message.push(`There are *${players.length}* people in the office.`);
-    message.push(`\n`);
-    message.push(`\n`);
+    let message: string[] = [];
+    const newLine = () => message.push(` `);
+    const writeLine = (value: string) => message.push(value);
+
+    // Write the header.
+    writeLine(`:office: Metaverse Office`);
+    writeLine(`There are *${players.length}* people in the office.`);
+    newLine();
+    newLine();
 
     // Creates a presence list for online and offline members.
     if(members.length > 0) {
@@ -41,18 +45,18 @@ export const generatePresenceMessage = (players: GatherPlayer[]) => {
         const membersOffline = members
                                 .filter(filterOfflineMembers(membersOnline));
 
-        message.push(`🧑‍🚀  *Members (${membersOnline.length} online)*`);
+        writeLine(`🧑‍🚀  *Members (${membersOnline.length} online)*`);
 
         if(membersOnline.length > 0)
-            message.push(generateBulletList(membersOnline.map((player) => createPlayerLabel(player))));
+            writeLine(generateBulletList(membersOnline.map((player) => createPlayerLabel(player))));
 
-        message.push(`\n`);
+        newLine();
 
         // @ts-ignore
-        message.push(generateBulletList(membersOffline.map((player) => createPlayerLabel(player, true))));
+        writeLine(generateBulletList(membersOffline.map((player) => createPlayerLabel(player, true))));
 
-        message.push(`\n`);
-        message.push(`\n`);
+        newLine();
+        newLine();
     }
 
     // Creates a presence list for online guests.
@@ -62,12 +66,13 @@ export const generatePresenceMessage = (players: GatherPlayer[]) => {
                                 .map((player) => createPlayerLabel(player));
 
         if(guestsOnline.length > 0) {
-            message.push(`👋  *Guests (${guestsOnline.length} online)*`);
-            message.push(`\n`);
-            message.push(generateBulletList(guestsOnline));
+            writeLine(`👋  *Guests (${guestsOnline.length} online)*`);
+            newLine();
+            writeLine(generateBulletList(guestsOnline));
         }
     }
 
+    newLine();
     return message.join("\n");
 }
 
