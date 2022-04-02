@@ -15,6 +15,7 @@ A node app connecting Gather Town with Slack.
 - 🟢 **Online presence** - See user presence from Gather on Slack.
 - 💬 **Shared chat** - Chat between Gather <--> Slack.
 - 🏷️ **Synced status** - Slack status is synced with Gather.
+- 🔔 **Doorbell** - Get Slack notifications, when someone rings the doorbell.
 
 ### Instructions
 <br />

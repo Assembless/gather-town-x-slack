@@ -46,24 +46,26 @@ const {
   SLACK_PORT,
   SLACK_CHAT_CHANNEL_ID,
   SLACK_PRESENCE_CHANNEL_ID,
+  GATHER_DOORBELL_OBJ_ID
 } = process.env;
 
 export default {
   members: MEMBERS,
   slack: {
-    presenceChannelId: SLACK_PRESENCE_CHANNEL_ID?.toString(),
-    chatChannelId: SLACK_CHAT_CHANNEL_ID?.toString(),
+    presenceChannelId: SLACK_PRESENCE_CHANNEL_ID,
+    chatChannelId: SLACK_CHAT_CHANNEL_ID,
     port: SLACK_PORT ?? 3000,
     appOptions: {
-      token: SLACK_BOT_TOKEN?.toString(),
-      signingSecret: SLACK_SIGNING_SECRET?.toString(),
+      token: SLACK_BOT_TOKEN,
+      signingSecret: SLACK_SIGNING_SECRET,
       socketMode: true,
-      appToken: SLACK_APP_TOKEN?.toString(),
+      appToken: SLACK_APP_TOKEN,
     },
   },
   gather: {
-    apiKey: GATHER_API_KEY?.toString(),
-    spaceId: GATHER_SPACE_ID?.toString(),
-    mapId: GATHER_MAP_ID?.toString(),
+    apiKey: GATHER_API_KEY,
+    spaceId: GATHER_SPACE_ID,
+    mapId: GATHER_MAP_ID,
+    doorBellId: GATHER_DOORBELL_OBJ_ID,
   },
 };

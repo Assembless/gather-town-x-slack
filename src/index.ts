@@ -136,6 +136,20 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
   });
 
   /**
+   * Gather event handler for player with objects interactions.
+   */
+  gatherClient.subscribeToEvent("playerInteracts", (data, context) => {
+    // Send a notification to the Slack chat channel when someone interacts with the specified doorbell object.
+    if(data.playerInteracts.objId === config.gather.doorBellId) {
+      slackClient.client.chat.postMessage({
+        channel: CHAT_CHANNEL_ID,
+        text: `🔔 Hey! *${context.player?.name ?? "Someone"}* rang the doorbell!`,
+        mrkdwn: true
+      })
+    }
+  });
+
+  /**
    * Send messages from Gather to Slack.
    * ! Not working correctly yet!
    */
