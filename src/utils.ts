@@ -47,8 +47,10 @@ export const generatePresenceMessage = (players: GatherPlayer[]) => {
 
         writeLine(`🧑‍🚀  *Members (${membersOnline.length} online)*`);
 
-        if(membersOnline.length > 0)
+        if(membersOnline.length > 0) {
+            newLine();
             writeLine(generateBulletList(membersOnline.map((player) => createPlayerLabel(player))));
+        }
 
         newLine();
 
