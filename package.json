@@ -6,6 +6,9 @@
   "license": "MIT",
   "private": true,
   "types": "./src/index.d.ts",
+  "engines": {
+    "node": "14.17.6"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node ./dist/index.js",
@@ -18,8 +21,10 @@
     "@slack/bolt": "^3.10.0",
     "dotenv": "^16.0.0",
     "gathertown.js": "^1.0.0-alpha.1",
+    "moment": "^2.29.3",
     "patch-package": "^6.4.7",
     "postinstall-postinstall": "^2.1.0",
+    "sharp": "^0.30.4",
     "ws": "^8.5.0"
   },
   "devDependencies": {

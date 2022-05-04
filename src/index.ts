@@ -2,7 +2,7 @@ import { initGather } from "./gather";
 import { Emoji } from "./emoji";
 import config from "./config";
 import { deleteAllMessages, initSlack } from "./slack";
-import { generatePresenceMessage } from "./utils";
+import { generatePresenceMessage } from "./presence";
 import { GatherPlayer } from "./types";
 
 const PRESENCE_CHANNEL_ID = config.slack.presenceChannelId!;
@@ -14,6 +14,8 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
 (async () => {
   const slackClient = await initSlack();
   const gatherClient = await initGather();
+
+  slackClient.client.users.setPresence({ presence: "auto", token: config.slack.appOptions.token });
 
   /**
    * The players currently online in Gather space.
@@ -120,6 +122,22 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
     }
   });
 
+  // setTimeout(async () => {
+  //   // Find all indicator objects.
+  //   // @ts-ignore
+  //   console.log(Object.keys(gatherClient!.completeMaps['rw-6'].objects).filter((x) => {
+  //     // @ts-ignore
+  //     const obj = gatherClient!.completeMaps['rw-6'].objects[x];
+      
+  //     if(obj.id.indexOf("Bookshelf") > -1) {
+  //       console.log(obj);
+  //       return true;
+  //     }
+
+  //     return false;
+  //   }));
+  // }, 10000)
+
   /**
    * Gather event handler for player leaving.
    */
@@ -132,6 +150,10 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
       // Remove the player from the list.
       playersOnline.splice(playerIndex, 1);
 
+      const memberIds = config.members.map((m) => m.gatherId);
+      const memberIndex = memberIds.indexOf(context.playerId!);
+      config.members[memberIndex].lastSeen = new Date();
+
       updateOnlinePresenceMessage();
     }
   });
@@ -139,16 +161,19 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
   /**
    * Gather event handler for player with objects interactions.
    */
-  gatherClient.subscribeToEvent("playerInteracts", (data, context) => {
-    // Send a notification to the Slack chat channel when someone interacts with the specified doorbell object.
-    if(data.playerInteracts.objId === config.gather.doorBellId) {
-      slackClient.client.chat.postMessage({
-        channel: CHAT_CHANNEL_ID,
-        text: `🔔 Hey! *${context.player?.name ?? "Someone"}* rang the doorbell!`,
-        mrkdwn: true
-      })
-    }
-  });
+  // gatherClient.subscribeToEvent("playerInteracts", async (data, context) => {
+  //   console.log(data);
+  //   console.log(await gatherClient.getObject(data.playerInteracts.objId))
+  //   // Send a notification to the Slack chat channel when someone interacts with the specified doorbell object.
+  //   if(data.playerInteracts.objId === objects.doorbell.gatherId) {
+  //     objects.doorbell.fn(context.player?.name);
+  //   }
+  // });
+
+  // gatherClient.subscribeToEvent("playerMoves", (data, context) => {
+  //   // console.log(context);
+
+  // })
 
   /**
    * Send messages from Gather to Slack.
@@ -215,8 +240,74 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
 
       playersOnline[playersOnline.indexOf(player)] = { ...player, ...gatherPlayer };
     });
+
     console.log(`[${new Date()}]`, "Gather players synced.");
 
     updateOnlinePresenceMessage();
   }, 30000);
+
+  process.on('SIGHUP', function() {
+    slackClient.client.users.setPresence({ presence: "away", token: config.slack.appOptions.token });
+    process.exit();
+  });
+
+  // setTimeout(() => {
+  //   console.log(gatherClient.players);
+  // }, 5000);
+
+  slackClient.event('app_home_opened', async ({ event, client }: any) => {
+    try {
+      /* view.publish is the method that your app uses to push a view to the Home tab */
+      const result = await client.views.publish({
+  
+        /* the user that opened your app's app home */
+        user_id: event.user,
+  
+        /* the view object that appears in the app home*/
+        view: {
+          type: 'home',
+          callback_id: 'home_view',
+  
+          /* body of the view */
+          blocks: [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*Welcome to your Gather Town space board* _alpha_"
+              }
+            },
+            {
+              "type": "divider"
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*Space config*"
+              }
+            },
+            {
+              
+            },
+            {
+              "type": "actions",
+              "elements": [
+                {
+                  "type": "button",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Save"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      });
+    }
+    catch (error) {
+      console.error(error);
+    }
+  });
 })();
