@@ -20,7 +20,7 @@ export const filterMembers =   (members: Member[], included: boolean = true) =>
  * Generates a string bullet list suitable for markdown.
  */
 export const generateBulletList = (items: string[]) => {
-    return "- " + items.join("\n- ");
+    return "     - " + items.join("\n     - ");
 }
 
 /**

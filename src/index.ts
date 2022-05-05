@@ -15,8 +15,6 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
   const slackClient = await initSlack();
   const gatherClient = await initGather();
 
-  slackClient.client.users.setPresence({ presence: "auto", token: config.slack.appOptions.token });
-
   /**
    * The players currently online in Gather space.
    */
@@ -122,22 +120,6 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
     }
   });
 
-  // setTimeout(async () => {
-  //   // Find all indicator objects.
-  //   // @ts-ignore
-  //   console.log(Object.keys(gatherClient!.completeMaps['rw-6'].objects).filter((x) => {
-  //     // @ts-ignore
-  //     const obj = gatherClient!.completeMaps['rw-6'].objects[x];
-      
-  //     if(obj.id.indexOf("Bookshelf") > -1) {
-  //       console.log(obj);
-  //       return true;
-  //     }
-
-  //     return false;
-  //   }));
-  // }, 10000)
-
   /**
    * Gather event handler for player leaving.
    */
@@ -161,44 +143,50 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
   /**
    * Gather event handler for player with objects interactions.
    */
-  // gatherClient.subscribeToEvent("playerInteracts", async (data, context) => {
-  //   console.log(data);
-  //   console.log(await gatherClient.getObject(data.playerInteracts.objId))
-  //   // Send a notification to the Slack chat channel when someone interacts with the specified doorbell object.
-  //   if(data.playerInteracts.objId === objects.doorbell.gatherId) {
-  //     objects.doorbell.fn(context.player?.name);
-  //   }
-  // });
-
-  // gatherClient.subscribeToEvent("playerMoves", (data, context) => {
-  //   // console.log(context);
-
-  // })
+  gatherClient.subscribeToEvent("playerInteracts", async (data, context) => {
+    // Send a notification to the Slack chat channel when someone interacts with the specified doorbell object.
+    if(data.playerInteracts.objId === config.gather.doorBellId) {
+      slackClient.client.chat.postMessage({
+        channel: CHAT_CHANNEL_ID,
+        text: `🔔 Hey! *${context.player?.name ?? "Someone"}* rang the doorbell!`,
+        mrkdwn: true
+      })
+    }
+  });
 
   /**
    * Send messages from Gather to Slack.
-   * ! Not working correctly yet!
    */
-  // gatherClient.subscribeToEvent("playerChats", async (data, context) => {
-  //   if(data.playerChats.contents.indexOf("[SLACK]") === -1)
-  //     await slackClient.client.chat.postMessage({
-  //         channel: CHAT_CHANNEL_ID,
-  //         text: `*${context?.player?.name}* said: \n> ${data.playerChats.contents}`,
-  //         mrkdwn: true,
-  //     });
-  // });
+  gatherClient.subscribeToEvent("playerChats", async (data, context) => {
+    if(data.playerChats.messageType === "DM") return;
+
+    if(data.playerChats.senderId !== config.gather.botId)
+      await slackClient.client.chat.postMessage({
+          channel: CHAT_CHANNEL_ID,
+          text: `*${context?.player?.name}* said: \n> ${data.playerChats.contents}`,
+          mrkdwn: true,
+      });
+  });
 
   /**
    * Send messages from Slack to Gather.
-   * ! Not working correctly yet!
    */
-  // slackClient.message(async ({ message, context }) => {
-  //   // @ts-ignore
-  //   if(message.channel === CHAT_CHANNEL_ID && message.text) {
-  //     // @ts-ignore
-  //     gatherClient.chat('GLOBAL_CHAT', [], "rw-6", { contents: (players.find(p => p.id === context.playerId)?.name ?? "Anonymous") + " said: " + message.text + " [SLACK]" });
-  //   }
-  // });
+  slackClient.message(async ({ message, context }) => {
+    // @ts-ignore
+    if(message.channel === CHAT_CHANNEL_ID && message.text) {
+      // @ts-ignore
+      const playerName = playersOnline.find(p => p.slackId === context.playerId)?.name ?? "Anonymous";
+
+      gatherClient.chat(
+        'GLOBAL_CHAT', 
+        [], 
+        "rw-6", 
+        { 
+          // @ts-ignore
+          contents: (playerName + " said: " + message.text)
+        });
+    }
+  });
 
   /**
    * Slack event handler for user change. It's used to sync user status between Slack and Gather.
@@ -245,69 +233,4 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
 
     updateOnlinePresenceMessage();
   }, 30000);
-
-  process.on('SIGHUP', function() {
-    slackClient.client.users.setPresence({ presence: "away", token: config.slack.appOptions.token });
-    process.exit();
-  });
-
-  // setTimeout(() => {
-  //   console.log(gatherClient.players);
-  // }, 5000);
-
-  slackClient.event('app_home_opened', async ({ event, client }: any) => {
-    try {
-      /* view.publish is the method that your app uses to push a view to the Home tab */
-      const result = await client.views.publish({
-  
-        /* the user that opened your app's app home */
-        user_id: event.user,
-  
-        /* the view object that appears in the app home*/
-        view: {
-          type: 'home',
-          callback_id: 'home_view',
-  
-          /* body of the view */
-          blocks: [
-            {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": "*Welcome to your Gather Town space board* _alpha_"
-              }
-            },
-            {
-              "type": "divider"
-            },
-            {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": "*Space config*"
-              }
-            },
-            {
-              
-            },
-            {
-              "type": "actions",
-              "elements": [
-                {
-                  "type": "button",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "Save"
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      });
-    }
-    catch (error) {
-      console.error(error);
-    }
-  });
 })();

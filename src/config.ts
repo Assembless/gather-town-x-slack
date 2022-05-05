@@ -40,6 +40,7 @@ const {
   GATHER_MAP_ID,
   GATHER_SPACE_ID,
   GATHER_API_KEY,
+  GATHER_BOT_ID,
   SLACK_APP_TOKEN,
   SLACK_SIGNING_SECRET,
   SLACK_BOT_TOKEN,
@@ -66,6 +67,7 @@ export default {
     apiKey: GATHER_API_KEY,
     spaceId: GATHER_SPACE_ID,
     mapId: GATHER_MAP_ID,
+    botId: GATHER_BOT_ID,
     doorBellId: GATHER_DOORBELL_OBJ_ID,
   },
 };
