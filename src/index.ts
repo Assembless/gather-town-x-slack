@@ -140,53 +140,58 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
     }
   });
 
-  /**
-   * Gather event handler for player with objects interactions.
-   */
-  gatherClient.subscribeToEvent("playerInteracts", async (data, context) => {
-    // Send a notification to the Slack chat channel when someone interacts with the specified doorbell object.
-    if(data.playerInteracts.objId === config.gather.doorBellId) {
-      slackClient.client.chat.postMessage({
-        channel: CHAT_CHANNEL_ID,
-        text: `🔔 Hey! *${context.player?.name ?? "Someone"}* rang the doorbell!`,
-        mrkdwn: true
-      })
-    }
-  });
+  // ! Doorbell and chat features only available if the chat channel id has been provided.
+  if(!!CHAT_CHANNEL_ID) {
 
-  /**
-   * Send messages from Gather to Slack.
-   */
-  gatherClient.subscribeToEvent("playerChats", async (data, context) => {
-    if(data.playerChats.messageType === "DM") return;
-
-    if(data.playerChats.senderId !== config.gather.botId)
-      await slackClient.client.chat.postMessage({
+    /**
+     * Gather event handler for player with objects interactions.
+     */
+    gatherClient.subscribeToEvent("playerInteracts", async (data, context) => {
+      // Send a notification to the Slack chat channel when someone interacts with the specified doorbell object.
+      if(data.playerInteracts.objId === config.gather.doorBellId) {
+        slackClient.client.chat.postMessage({
           channel: CHAT_CHANNEL_ID,
-          text: `*${context?.player?.name}* said: \n> ${data.playerChats.contents}`,
-          mrkdwn: true,
-      });
-  });
-
-  /**
-   * Send messages from Slack to Gather.
-   */
-  slackClient.message(async ({ message, context }) => {
-    // @ts-ignore
-    if(message.channel === CHAT_CHANNEL_ID && message.text) {
-      // @ts-ignore
-      const playerName = playersOnline.find(p => p.slackId === context.playerId)?.name ?? "Anonymous";
-
-      gatherClient.chat(
-        'GLOBAL_CHAT', 
-        [], 
-        "rw-6", 
-        { 
-          // @ts-ignore
-          contents: (playerName + " said: " + message.text)
+          text: `🔔 Hey! *${context.player?.name ?? "Someone"}* rang the doorbell!`,
+          mrkdwn: true
+        })
+      }
+    });
+  
+    /**
+     * Send messages from Gather to Slack.
+     */
+    gatherClient.subscribeToEvent("playerChats", async (data, context) => {
+      if(data.playerChats.messageType === "DM") return;
+  
+      if(data.playerChats.senderId !== config.gather.botId)
+        await slackClient.client.chat.postMessage({
+            channel: CHAT_CHANNEL_ID,
+            text: `*${context?.player?.name}* said: \n> ${data.playerChats.contents}`,
+            mrkdwn: true,
         });
-    }
-  });
+    });
+  
+    /**
+     * Send messages from Slack to Gather.
+     */
+    slackClient.message(async ({ message, context }) => {
+      // @ts-ignore
+      if(message.channel === CHAT_CHANNEL_ID && message.text) {
+        // @ts-ignore
+        const playerName = playersOnline.find(p => p.slackId === context.playerId)?.name ?? "Anonymous";
+  
+        gatherClient.chat(
+          'GLOBAL_CHAT', 
+          [], 
+          "rw-6", 
+          { 
+            // @ts-ignore
+            contents: (playerName + " said: " + message.text)
+          });
+      }
+    });
+  }
+
 
   /**
    * Slack event handler for user change. It's used to sync user status between Slack and Gather.
