@@ -59,8 +59,11 @@ export const generatePresenceMessage = (players: GatherPlayer[]) => {
             writeLine(generateBulletList(guestsOnline));
         }
     }
-
+    
     newLine();
+    newLine();
+    newLine();
+    writeLine(" ");
     return message.join("\n");
 };
 
@@ -70,12 +73,15 @@ export const generatePresenceMessage = (players: GatherPlayer[]) => {
  * @returns Formatted player label for the presence message.
  */
 const createPlayerLabel = (player: GatherPlayer, isOffline: boolean = false) => {
+    const isAFK = moment(player.lastActive).isBefore(moment().subtract(5, "minutes"));
+
     const name = player?.slackId ? `<@${player.slackId}>` : player.name;
 
-    const label = `*${name}*`;
-    const status_emoji = isOffline ? "🔌" : player.emojiStatus;
     const last_seen_text = player.lastSeen ? ` (last seen: ${moment(player?.lastSeen).fromNow()})` : ""
-    const status_text = isOffline ? `Offline${last_seen_text}` : player.textStatus;
+
+    const label = `*${name}*`;
+    const status_emoji = isOffline ? "🔌" : isAFK ?  " 💤 " : player.emojiStatus;
+    const status_text = isOffline ? `Offline${last_seen_text}` : isAFK ? `AFK` : player.textStatus;
 
     if (status_emoji || status_text)
         return `${label} \`${status_emoji} ${status_text}\``;
