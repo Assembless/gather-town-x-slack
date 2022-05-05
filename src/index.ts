@@ -224,6 +224,24 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
   });
 
   /**
+   * Slack command that returns the current online players in Gather.
+   * Mainly used to get the list of player id's to use with the members list.
+   */
+  slackClient.command("/gatherplayers", async ({ ack, say }) => {
+    await ack();
+
+    let message: string[] = [];
+
+    playersOnline.forEach((player, index) => {
+      message.push(`${index + 1}. *${player.name}* ( ${player.gatherId} )`);
+      message.push("Full player info (in JSON format):")
+      message.push("```" + JSON.stringify(player, null, 2) + "```");
+    })
+
+    say(message.join("\n\n\n"));
+  });
+
+  /**
    * Main interval loop syncing player data.
    */
   setInterval(() => {
