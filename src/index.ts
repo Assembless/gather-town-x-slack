@@ -78,7 +78,7 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
                       {
                         text: "Visit Office",
                         type: "button",
-                        url: "https://office.assembless.tech", // Change this url to your own.
+                        url: "https://app.gather.town/app/" + config.gather.spaceId, // Change this url to your own.
                       },
                     ],
                   },
