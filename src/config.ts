@@ -34,6 +34,11 @@ const MEMBERS: Member[] = [
     slackId: "U0360356C3Y",
     gatherId: "",
   },
+  {
+    name: "Ekikere-abasi Michael",
+    slackId: "U03N889K134",
+    gatherId: "6n9vDhhOenU90W3ZulnvOaZX3Nf1",
+  }
 ];
 
 const {
