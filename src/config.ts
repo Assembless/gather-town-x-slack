@@ -38,6 +38,11 @@ const MEMBERS: Member[] = [
     name: "Ekikere-abasi Michael",
     slackId: "U03N889K134",
     gatherId: "6n9vDhhOenU90W3ZulnvOaZX3Nf1",
+  },
+  {
+    name: "David Ohis",
+    slackId: "U03V0TC3DGE",
+    gatherId: "ZgNJTP93v8XQq3Hx7TaMNR4I28U2",
   }
 ];
 
