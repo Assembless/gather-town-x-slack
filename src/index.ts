@@ -4,9 +4,19 @@ import config from "./config";
 import { deleteAllMessages, initSlack } from "./slack";
 import { generatePresenceMessage } from "./presence";
 import { GatherPlayer } from "./types";
+import * as http from 'http';
 
 const PRESENCE_CHANNEL_ID = config.slack.presenceChannelId!;
 const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
+
+// Used for health check.
+const healthServerListener = () => {
+  const server = http.createServer((req, res) => {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("healthy");
+  });
+  server.listen(8080);
+}
 
 /**
  * It's here... where it all begins :D
@@ -256,4 +266,6 @@ const CHAT_CHANNEL_ID = config.slack.chatChannelId!;
 
     updateOnlinePresenceMessage();
   }, 30000);
+
+  healthServerListener();
 })();

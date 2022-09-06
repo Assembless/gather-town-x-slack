@@ -40,9 +40,14 @@ const MEMBERS: Member[] = [
     gatherId: "6n9vDhhOenU90W3ZulnvOaZX3Nf1",
   },
   {
-    name: "David Ohis",
+    name: "David",
     slackId: "U03V0TC3DGE",
     gatherId: "uLYzZBPu18eoeQUaZItkU0YcAh73",
+  },
+  {
+    name: "Łukasz",
+    slackId: "U040B1QF4PR",
+    gatherId: "UqG12OCQhEYSR37Fa0zXz9x8SUF2",
   }
 ];
 
