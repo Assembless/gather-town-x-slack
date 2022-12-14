@@ -15,10 +15,11 @@
     "dev": "yarn build && yarn start",
     "watch": "nodemon ./src/index.ts",
     "postinstall": "patch-package",
-    "deploy": "yarn build && flyctl deploy --remote-only"
+    "deploy": "yarn build && flyctl deploy --local-only"
   },
   "dependencies": {
-    "@gathertown/gather-game-client": "^36.0.3",
+    "@gathertown/gather-game-client": "^38.0.1",
+    "@gathertown/gather-game-common": "^30.0.0",
     "@slack/bolt": "^3.10.0",
     "dotenv": "^16.0.0",
     "gathertown.js": "^1.0.0-alpha.1",

@@ -62,38 +62,38 @@ const healthServerListener = () => {
 
       // Update the presence message.
       await slackClient.client.chat
-              .update({
-                channel: PRESENCE_CHANNEL_ID,
-                ts: messageId,
-                text: generatedMessage,
-                link_names: true,
-              });
+        .update({
+          channel: PRESENCE_CHANNEL_ID,
+          ts: messageId,
+          text: generatedMessage,
+          link_names: true,
+        });
 
     } catch (err) {
       // Remove all messages from the channel.
       await deleteAllMessages(PRESENCE_CHANNEL_ID);
-      
+
       // Post a new message and save it to make use of it in the future.
       const newMessage = await slackClient.client.chat
-              .postMessage({
-                channel: PRESENCE_CHANNEL_ID,
-                mrkdwn: true,
-                text: generatedMessage,
-                link_names: true,
-                attachments: [
-                  {
-                    text: "Want to visit the office?",
-                    callback_id: "visit_office",
-                    actions: [
-                      {
-                        text: "Visit Office",
-                        type: "button",
-                        url: "https://app.gather.town/app/" + config.gather.spaceId, // Change this url to your own.
-                      },
-                    ],
-                  },
-                ],
-              });
+        .postMessage({
+          channel: PRESENCE_CHANNEL_ID,
+          mrkdwn: true,
+          text: generatedMessage,
+          link_names: true,
+          attachments: [
+            {
+              text: "Want to visit the office?",
+              callback_id: "visit_office",
+              actions: [
+                {
+                  text: "Visit Office",
+                  type: "button",
+                  url: "https://app.gather.town/app/" + config.gather.spaceId, // Change this url to your own.
+                },
+              ],
+            },
+          ],
+        });
 
       // Save the message ID.
       messageId = newMessage.ts!;
@@ -126,6 +126,12 @@ const healthServerListener = () => {
         });
 
         updateOnlinePresenceMessage();
+
+        slackClient.client.chat.postMessage({
+          channel: config.slack.logsChannelId as string, 
+          text: `🚪 *${context.player?.name ?? "Someone"}* joined the space.`,
+          mrkdwn: true
+        })
       }
     }
   });
@@ -147,18 +153,24 @@ const healthServerListener = () => {
       config.members[memberIndex].lastSeen = new Date();
 
       updateOnlinePresenceMessage();
+
+      slackClient.client.chat.postMessage({
+        channel: config.slack.logsChannelId as string, 
+        text: `🚪 *${context.player?.name ?? "Someone"}* left the space.`,
+        mrkdwn: true
+      })
     }
   });
-
+  
   // ! Doorbell and chat features only available if the chat channel id has been provided.
-  if(!!CHAT_CHANNEL_ID) {
+  if (!!CHAT_CHANNEL_ID) {
 
     /**
      * Gather event handler for player with objects interactions.
      */
     gatherClient.subscribeToEvent("playerInteracts", async (data, context) => {
       // Send a notification to the Slack chat channel when someone interacts with the specified doorbell object.
-      if(data.playerInteracts.objId === config.gather.doorBellId) {
+      if (data.playerInteracts.objId === config.gather.doorBellId) {
         slackClient.client.chat.postMessage({
           channel: CHAT_CHANNEL_ID,
           text: `🔔 Hey! *${context.player?.name ?? "Someone"}* rang the doorbell!`,
@@ -166,35 +178,35 @@ const healthServerListener = () => {
         })
       }
     });
-  
+
     /**
      * Send messages from Gather to Slack.
      */
     gatherClient.subscribeToEvent("playerChats", async (data, context) => {
-      if(data.playerChats.messageType === "DM") return;
-  
-      if(data.playerChats.senderId !== config.gather.botId)
-        await slackClient.client.chat.postMessage({
-            channel: CHAT_CHANNEL_ID,
-            text: `*${context?.player?.name}* said: \n> ${data.playerChats.contents}`,
-            mrkdwn: true,
-        });
+      if (data.playerChats.messageType === "DM") return;
+
+      // if(data.playerChats.senderId !== config.gather.botId)
+      //   await slackClient.client.chat.postMessage({
+      //       channel: CHAT_CHANNEL_ID,
+      //       text: `*${context?.player?.name}* said: \n> ${data.playerChats.contents}`,
+      //       mrkdwn: true,
+      //   });
     });
-  
+
     /**
      * Send messages from Slack to Gather.
      */
     slackClient.message(async ({ message, context }) => {
       // @ts-ignore
-      if(message.channel === CHAT_CHANNEL_ID && message.text) {
+      if (message.channel === CHAT_CHANNEL_ID && message.text) {
         // @ts-ignore
         const playerName = playersOnline.find(p => p.slackId === context.playerId)?.name ?? "Anonymous";
-  
+
         gatherClient.chat(
-          'GLOBAL_CHAT', 
-          [], 
-          "rw-6", 
-          { 
+          'GLOBAL_CHAT',
+          [],
+          "rw-6",
+          {
             // @ts-ignore
             contents: (playerName + " said: " + message.text)
           });

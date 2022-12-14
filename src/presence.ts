@@ -73,19 +73,25 @@ export const generatePresenceMessage = (players: GatherPlayer[]) => {
  * @returns Formatted player label for the presence message.
  */
 const createPlayerLabel = (player: GatherPlayer, isOffline: boolean = false) => {
-    const isAFK = moment(player.lastActive).isBefore(moment().subtract(5, "minutes"));
+    const isBusy = player.busy;
+    const isAFK = false // player.away;
+    // const isAFK = player.busy; // moment(player.lastActive).isBefore(moment().subtract(5, "minutes"));
 
     const name = player?.slackId ? `<@${player.slackId}>` : player.name;
 
     const last_seen_text = player.lastSeen ? ` (last seen: ${moment(player?.lastSeen).fromNow()})` : ""
 
-    const label = `*${name}*`;
-    const status_emoji = isOffline ? "🔌" : isAFK ?  " 💤 " : player.emojiStatus;
-    const status_text = isOffline ? `Offline${last_seen_text}` : isAFK ? `AFK` : player.textStatus;
+    let label = `*${name}*`;
+    const status_emoji = isOffline ? "🔌" : isBusy ? "🚫" : isAFK ?  "💤" : player.emojiStatus;
+    const status_text = isOffline ? `Offline${last_seen_text}` : isBusy ? "Busy" : isAFK ? `AFK` : player.textStatus;
+
+    const current_area = player.currentArea ? `_${player.currentArea}_` : undefined
 
     if (status_emoji || status_text)
-        return `${label} \`${status_emoji} ${status_text}\``;
+        label += ` \`${status_emoji} ${status_text}\``;
 
-    else
-        return label;
+    if(current_area) 
+        label += ` ${current_area}`;
+
+    return label;
 };

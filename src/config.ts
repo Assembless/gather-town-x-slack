@@ -20,35 +20,40 @@ const MEMBERS: Member[] = [
     gatherId: "CwzQmehbWCfiHpeaHg0bhUY91Mz1",
   },
   {
-    name: "Bartek",
-    slackId: "U036034UZ62",
-    gatherId: "zAbFaneypZOpmxkeNoF6eCyG6is1",
-  },
-  {
     name: "Krzysztof",
     slackId: "U036SB5JYHZ",
     gatherId: "H4wSnVqIjUYk7EQoY0IDFMEjSXY2",
   },
   {
-    name: "Karolina",
-    slackId: "U0360356C3Y",
-    gatherId: "",
-  },
-  {
-    name: "Ekikere-abasi Michael",
-    slackId: "U03N889K134",
-    gatherId: "6n9vDhhOenU90W3ZulnvOaZX3Nf1",
-  },
-  {
-    name: "David",
-    slackId: "U03V0TC3DGE",
-    gatherId: "uLYzZBPu18eoeQUaZItkU0YcAh73",
-  },
-  {
     name: "Łukasz",
     slackId: "U040B1QF4PR",
-    gatherId: "UqG12OCQhEYSR37Fa0zXz9x8SUF2",
+    gatherId: "zGvbRrPLSGUCDamNJs184uSztHw1",
+  },
+  {
+    name: "Tomek",
+    slackId: "U04F5MP7GEQ",
+    gatherId: "EYQoHgA11kcFdO4CVhaJ4ruopPn2",
   }
+  // {
+  //   name: "Bartek",
+  //   slackId: "U036034UZ62",
+  //   gatherId: "zAbFaneypZOpmxkeNoF6eCyG6is1",
+  // },
+  // {
+  //   name: "Karolina",
+  //   slackId: "U0360356C3Y",
+  //   gatherId: "",
+  // },
+  // {
+  //   name: "Ekikere-abasi Michael",
+  //   slackId: "U03N889K134",
+  //   gatherId: "6n9vDhhOenU90W3ZulnvOaZX3Nf1",
+  // },
+  // {
+  //   name: "David",
+  //   slackId: "U03V0TC3DGE",
+  //   gatherId: "uLYzZBPu18eoeQUaZItkU0YcAh73",
+  // },
 ];
 
 const {
@@ -62,14 +67,16 @@ const {
   SLACK_PORT,
   SLACK_CHAT_CHANNEL_ID,
   SLACK_PRESENCE_CHANNEL_ID,
+  SLACK_LOGS_CHANNEL_ID,
   GATHER_DOORBELL_OBJ_ID
 } = process.env;
 
-export default {
+const config = {
   members: MEMBERS,
   slack: {
     presenceChannelId: SLACK_PRESENCE_CHANNEL_ID,
     chatChannelId: SLACK_CHAT_CHANNEL_ID,
+    logsChannelId: SLACK_LOGS_CHANNEL_ID,
     port: SLACK_PORT ?? 3000,
     appOptions: {
       token: SLACK_BOT_TOKEN,
@@ -86,3 +93,7 @@ export default {
     doorBellId: GATHER_DOORBELL_OBJ_ID,
   },
 };
+
+console.log("Config =>", JSON.stringify(config, null, 2))
+
+export default config;
